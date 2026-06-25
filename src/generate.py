@@ -195,6 +195,13 @@ def ideate(cfg: dict, count: int, use_web: bool = True) -> list[dict]:
         + "\n".join(f"- {t}" for t in reference)
         if reference else "（参照リストは空です。一般的に伸びる型で考えてください）"
     )
+    avoid = cfg.get("avoid_topics", []) or []
+    avoid_block = (
+        "【絶対に扱わないテーマ（これらを主題にした企画は出さない）】\n"
+        + "\n".join(f"- {a['topic']}（理由：{a['reason']}）" for a in avoid)
+        + "\n"
+        if avoid else ""
+    )
     web_instruction = (
         "0. まずWeb検索で、最近SNS（X等）やニュースで話題になっている借金・債務整理・お金まわりの\n"
         "   トピック（例：「破産者マップ」など）を調べ、企画の新しい切り口として活かす。\n"
@@ -214,6 +221,7 @@ def ideate(cfg: dict, count: int, use_web: bool = True) -> list[dict]:
         "- ただし債務者を貶める煽り（「借金の末路」等）は使わない。怖がらせて終わらせず、最後は安心と次の一歩へ。\n"
         "- 本編で視聴者が持ち帰れる価値（行動・損得・判断基準など）を必ず用意する。\n"
         "- 過去テーマと切り口・結論が丸かぶりしないこと。各案の fresh_angle に“何が新しいか”を必ず書く。\n\n"
+        f"{avoid_block}\n"
         f"{reference_block}\n\n"
         f"{history_block}"
     )
