@@ -121,7 +121,7 @@ use_web = st.checkbox(
 col1, col2 = st.columns([1, 1])
 with col1:
     if st.button("💡 企画を3つ生成する", type="primary", use_container_width=True):
-        with st.spinner("企画を考えています…（30秒〜2分ほど）"):
+        with st.spinner("企画を考えています…" + ("（検索ありで1〜2分）" if use_web else "（15〜20秒ほど）")):
             t0 = usage.now_iso()
             try:
                 st.session_state.ideas = g.ideate(cfg, 3, use_web=use_web)
@@ -151,15 +151,8 @@ if ideas:
     idea = ideas[idx]
 
     st.markdown(f"### {idea.get('title', '')}")
-    st.markdown(f"**なぜ伸びる（クリック理由）**：{idea.get('click_reason', '-')}")
-    st.markdown(f"**視聴者の悩み・検索意図**：{idea.get('viewer_pain', '-')}")
-    st.markdown(f"**見て得られること**：{idea.get('value', '-')}")
+    st.markdown(f"**内容サマリ**：{idea.get('summary', '-')}")
     st.markdown(f"**🆕 新しい切り口**：{idea.get('fresh_angle', '-')}")
-    st.markdown(f"**掴み**：{idea.get('hook', '-')}")
-    st.markdown(f"**主なターゲット**：{idea.get('target_segment', '-')}")
-    st.markdown("**本編の流れ**：")
-    for point in idea.get("outline", []):
-        st.markdown(f"- {point}")
 
     chosen_theme = st.text_input(
         "テーマ（必要ならここで微調整できます）", value=idea["title"]

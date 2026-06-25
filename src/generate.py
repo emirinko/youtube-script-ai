@@ -169,15 +169,10 @@ IDEA_SCHEMA = {
                 "type": "object",
                 "properties": {
                     "title": {"type": "string", "description": "クリックされる動画タイトル（視聴者の検索・不安に直結）"},
-                    "click_reason": {"type": "string", "description": "なぜ伸びるか（クリックされる理由。参照リストのどの型か）"},
-                    "viewer_pain": {"type": "string", "description": "視聴者の具体的な悩み・検索意図"},
-                    "value": {"type": "string", "description": "見て得られること（不安解消・損得・判断基準など持ち帰れる価値）"},
-                    "fresh_angle": {"type": "string", "description": "過去の型に加える“新しい切り口”。最近SNS/ニュースで話題のこと（例：破産者マップ）に触れる等。無理なら独自の新しい視点でよい。"},
-                    "hook": {"type": "string", "description": "冒頭の掴みの一言"},
-                    "target_segment": {"type": "string"},
-                    "outline": {"type": "array", "items": {"type": "string"}, "description": "本編の流れ（3〜5個）"},
+                    "summary": {"type": "string", "description": "内容サマリ。誰のどんな悩みに、何を答える動画か。1〜2文・80字以内で簡潔に。"},
+                    "fresh_angle": {"type": "string", "description": "新しい切り口（最近の話題や独自視点）。40字以内で簡潔に。"},
                 },
-                "required": ["title", "click_reason", "viewer_pain", "value", "fresh_angle", "hook", "target_segment", "outline"],
+                "required": ["title", "summary", "fresh_angle"],
                 "additionalProperties": False,
             },
         }
@@ -224,9 +219,9 @@ def ideate(cfg: dict, count: int, use_web: bool = True) -> list[dict]:
     )
     params = dict(
         model=model_for(cfg, "ideate"),
-        max_tokens=8000,
+        max_tokens=4000,
         system=system,
-        thinking={"type": "adaptive"},
+        thinking={"type": "disabled"},  # 企画出しは速度優先（深い思考は不要）
         output_config={"format": {"type": "json_schema", "schema": IDEA_SCHEMA}},
         messages=[{"role": "user", "content": user}],
     )
@@ -241,15 +236,8 @@ def print_ideas(ideas: list[dict]) -> None:
     for i, idea in enumerate(ideas, 1):
         print(f"\n━━━ 企画 {i} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
         print(f"タイトル     : {idea['title']}")
-        print(f"なぜ伸びる   : {idea['click_reason']}")
-        print(f"視聴者の悩み : {idea['viewer_pain']}")
-        print(f"得られる価値 : {idea['value']}")
-        print(f"新しい切り口 : {idea['fresh_angle']}")
-        print(f"掴み         : {idea['hook']}")
-        print(f"ターゲット   : {idea['target_segment']}")
-        print("本編の流れ   :")
-        for point in idea["outline"]:
-            print(f"   ・{point}")
+        print(f"内容サマリ   : {idea.get('summary', '')}")
+        print(f"新しい切り口 : {idea.get('fresh_angle', '')}")
 
 
 # ============================================================
